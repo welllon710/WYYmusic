@@ -1,32 +1,92 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+  <div id="app" >
+   <nav-head-area ></nav-head-area>
+    <keep-alive >
+        <router-view v-if="isRouterAlive"></router-view>
+    </keep-alive>
+    <musicplay></musicplay>
   </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+
+import musicplay from './views/musicplay/musicplay';
+import NavHeadArea from "./components/conent/headArea";
+export default {
+  components: {
+    musicplay,
+    NavHeadArea
+  },
+  name:'app',
+  data() {
+    return {
+      screenWidth: document.documentElement.clientWidth, //打开页面宽度
+      timer: false,
+      wwdith: document.body.clientWidth - 262, //top组件下面条条
+      isRouterAlive:true
+    }
+  },
+  created() {
+    console.log(document.documentElement.clientWidth);
+  },
+  mounted() {
+     window.addEventListener("resize", this.setwwidth);
+  this.$on("hook:beforeDestory",()=>{
+
+  window.removeEventListener("resize", this.setwwidth);
+  })
+ 
+  },
+  provide(){
+    return {
+      reload:this.reload
+    }
+  },
+  methods: {
+     setwwidth() {
+      return (() => {
+        window.screenWidth = document.body.clientWidth;
+        this.screenWidth = window.screenWidth;
+      })();
+    },
+    reload(){
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
+      })
+    }
+  },
+    watch: {
+    screenWidth(val) {
+      if (!this.timer) {
+        this.screenWidth = val;
+        this.wwdith = this.screenWidth - 262;
+        if (this.wwdith > 1040) {
+          this.wwdith = 1040;
+          this.timer = false;
+        }
+        if (this.wwdith < 762) {
+          this.wwdith = 762;
+          this.timer = false;
+        }
+        this.$store.commit('changewidth',this.wwdith)
+        this.timer = true;
+        setTimeout(() => {
+          this.timer = false;
+        }, 300);
+      }
+    },
+  },
+}
+</script>
+<style >
+html,body,#app{
+  height: 100%;
+  overflow: hidden;
+}
+*{
+  margin: 0;
+  padding: 0;
 }
 
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
