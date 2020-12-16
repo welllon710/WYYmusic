@@ -39,8 +39,8 @@ const store = new Vuex.Store({
     }else{
       state.index++
       payload.index = state.index
-      arr.push(payload)
-      state.url.push(payload)
+      arr.unshift(payload)
+      state.url.unshift(payload)
     }
     storage.set('playlist',state.url)
    },

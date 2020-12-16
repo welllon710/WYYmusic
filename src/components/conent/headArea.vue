@@ -78,7 +78,7 @@ export default {
       this.meg = value; //关键字
       this.isshow = true;
       this.ishot = false;
-      search(value, 7).then((res) => {
+      search(value, 6).then((res) => {
         this.sugSongs = res.result.songs;
       });
     },
